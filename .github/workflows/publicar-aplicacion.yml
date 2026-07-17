@@ -18,7 +18,8 @@ jobs:
       - name: Descargar rama del Pull Request
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          show-progress: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Reconstruir paquete
@@ -28,7 +29,18 @@ jobs:
           rm -rf /tmp/radar-extract /tmp/radar-preserve
           mkdir -p /tmp/radar-extract /tmp/radar-preserve/assets
           cat .github/project-payload/core-*.b64 > /tmp/radar-payload.b64
-          base64 --decode /tmp/radar-payload.b64 > /tmp/radar-payload.gz
+          echo "Caracteres base64: $(wc -c < /tmp/radar-payload.b64)"
+          echo "SHA base64: $(sha256sum /tmp/radar-payload.b64 | cut -d' ' -f1)"
+          test "$(wc -c < /tmp/radar-payload.b64)" -eq 56084
+          test "$(sha256sum /tmp/radar-payload.b64 | cut -d' ' -f1)" = "4e46aab7f6702b17bc1711defa0e29f7d0c4e61958bf2a953abb76a06415e041"
+          python - <<'PY'
+          from pathlib import Path
+          import base64
+          source = Path('/tmp/radar-payload.b64').read_bytes()
+          Path('/tmp/radar-payload.gz').write_bytes(base64.b64decode(source, validate=True))
+          PY
+          echo "SHA gzip: $(sha256sum /tmp/radar-payload.gz | cut -d' ' -f1)"
+          test "$(sha256sum /tmp/radar-payload.gz | cut -d' ' -f1)" = "476172ce3c5856cfe481721657c9f6d1f8a676c4af02140226f5dc13944cdecb"
           gzip -dc /tmp/radar-payload.gz > /tmp/radar-payload.tar
           tar -tf /tmp/radar-payload.tar >/dev/null
           tar -xf /tmp/radar-payload.tar -C /tmp/radar-extract
@@ -42,7 +54,6 @@ jobs:
         run: |
           set -euo pipefail
           find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
-
           shopt -s dotglob nullglob
           entries=(/tmp/radar-extract/*)
           if [ "${#entries[@]}" -eq 1 ] && [ -d "${entries[0]}" ]; then
@@ -50,12 +61,10 @@ jobs:
           else
             cp -a /tmp/radar-extract/. .
           fi
-
           mkdir -p assets
           if [ -f /tmp/radar-preserve/assets/logo-radar-laguna.png ]; then
             cp /tmp/radar-preserve/assets/logo-radar-laguna.png assets/
           fi
-
           test -f index.html
           test -f app.js
           test -f styles.css
