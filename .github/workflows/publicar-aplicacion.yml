@@ -22,22 +22,32 @@ jobs:
           show-progress: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Reconstruir paquete
+      - name: Unir primera parte base64
+        run: cat .github/project-payload/a-*.b64 > /tmp/radar-payload.b64
+
+      - name: Añadir fragmentos hexadecimales
         shell: bash
         run: |
-          set -euo pipefail
-          rm -rf /tmp/radar-extract /tmp/radar-preserve
-          mkdir -p /tmp/radar-extract /tmp/radar-preserve/assets
+          python - <<'PY'
+          from pathlib import Path
+          target = Path('/tmp/radar-payload.b64')
+          with target.open('ab') as output:
+              for path in sorted(Path('.github/project-payload').glob('a-tail-*.hex')):
+                  output.write(bytes.fromhex(path.read_text().strip()))
+          PY
 
-          cat .github/project-payload/a-*.b64 > /tmp/radar-payload.b64
-          for file in .github/project-payload/a-tail-*.hex; do
-            xxd -r -p "$file" >> /tmp/radar-payload.b64
-          done
-          cat .github/project-payload/b-*.b64 >> /tmp/radar-payload.b64
+      - name: Añadir segunda parte base64
+        run: cat .github/project-payload/b-*.b64 >> /tmp/radar-payload.b64
 
-          test "$(wc -c < /tmp/radar-payload.b64)" -eq 56084
-          test "$(sha256sum /tmp/radar-payload.b64 | cut -d' ' -f1)" = "4e46aab7f6702b17bc1711defa0e29f7d0c4e61958bf2a953abb76a06415e041"
+      - name: Verificar tamaño base64
+        run: test "$(wc -c < /tmp/radar-payload.b64)" -eq 56084
 
+      - name: Verificar firma base64
+        run: test "$(sha256sum /tmp/radar-payload.b64 | cut -d' ' -f1)" = "4e46aab7f6702b17bc1711defa0e29f7d0c4e61958bf2a953abb76a06415e041"
+
+      - name: Decodificar paquete
+        shell: bash
+        run: |
           python - <<'PY'
           from pathlib import Path
           import base64
@@ -45,11 +55,18 @@ jobs:
           Path('/tmp/radar-payload.gz').write_bytes(base64.b64decode(source, validate=True))
           PY
 
-          test "$(sha256sum /tmp/radar-payload.gz | cut -d' ' -f1)" = "476172ce3c5856cfe481721657c9f6d1f8a676c4af02140226f5dc13944cdecb"
+      - name: Verificar firma gzip
+        run: test "$(sha256sum /tmp/radar-payload.gz | cut -d' ' -f1)" = "476172ce3c5856cfe481721657c9f6d1f8a676c4af02140226f5dc13944cdecb"
+
+      - name: Extraer paquete
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/radar-extract /tmp/radar-preserve
+          mkdir -p /tmp/radar-extract /tmp/radar-preserve/assets
           gzip -dc /tmp/radar-payload.gz > /tmp/radar-payload.tar
           tar -tf /tmp/radar-payload.tar >/dev/null
           tar -xf /tmp/radar-payload.tar -C /tmp/radar-extract
-
           if [ -f assets/logo-radar-laguna.png ]; then
             cp assets/logo-radar-laguna.png /tmp/radar-preserve/assets/
           fi
