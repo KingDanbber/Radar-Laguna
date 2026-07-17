@@ -1,13 +1,7 @@
-# Radar Laguna V11 · ensamblado automático
-name: Publicar aplicación completa
+name: Publicar Radar Laguna V11
 
 on:
   pull_request:
-    branches: [main]
-    paths:
-      - '.github/project-payload/**'
-      - '.github/workflows/publicar-aplicacion.yml'
-  push:
     branches: [main]
     paths:
       - '.github/project-payload/**'
@@ -21,28 +15,26 @@ jobs:
   publicar:
     runs-on: ubuntu-latest
     steps:
-      - name: Descargar repositorio
+      - name: Descargar rama del Pull Request
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
       - name: Reconstruir paquete
         shell: bash
         run: |
           set -euo pipefail
-          mkdir -p /tmp/radar-extract
-          cat .github/project-payload/part-*.b64 > /tmp/radar-payload.b64
+          rm -rf /tmp/radar-extract /tmp/radar-preserve
+          mkdir -p /tmp/radar-extract /tmp/radar-preserve/assets
+          cat .github/project-payload/core-*.b64 > /tmp/radar-payload.b64
           base64 --decode /tmp/radar-payload.b64 > /tmp/radar-payload.gz
-          gzip -dc /tmp/radar-payload.gz > /tmp/radar-payload.bin
+          gzip -dc /tmp/radar-payload.gz > /tmp/radar-payload.tar
+          tar -tf /tmp/radar-payload.tar >/dev/null
+          tar -xf /tmp/radar-payload.tar -C /tmp/radar-extract
 
-          if tar -tf /tmp/radar-payload.bin >/dev/null 2>&1; then
-            tar -xf /tmp/radar-payload.bin -C /tmp/radar-extract
-          elif unzip -t /tmp/radar-payload.bin >/dev/null 2>&1; then
-            unzip -q /tmp/radar-payload.bin -d /tmp/radar-extract
-          else
-            echo 'El paquete reconstruido no es un TAR ni un ZIP válido.' >&2
-            file /tmp/radar-payload.bin || true
-            exit 1
+          if [ -f assets/logo-radar-laguna.png ]; then
+            cp assets/logo-radar-laguna.png /tmp/radar-preserve/assets/
           fi
 
       - name: Sustituir contenido del repositorio
@@ -59,12 +51,17 @@ jobs:
             cp -a /tmp/radar-extract/. .
           fi
 
+          mkdir -p assets
+          if [ -f /tmp/radar-preserve/assets/logo-radar-laguna.png ]; then
+            cp /tmp/radar-preserve/assets/logo-radar-laguna.png assets/
+          fi
+
           test -f index.html
           test -f app.js
           test -f styles.css
           test -f supabase-config.js
-          test -f data/sepomex/CP_Coah.zip
-          test -f data/sepomex/CP_Dgo.zip
+          test -f supabase-service.js
+          test -f assets/logo-radar-laguna.png
 
       - name: Validar JavaScript
         run: node --check app.js
