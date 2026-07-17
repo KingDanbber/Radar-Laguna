@@ -25,6 +25,9 @@ jobs:
       - name: Unir primera parte base64
         run: cat .github/project-payload/a-*.b64 > /tmp/radar-payload.b64
 
+      - name: Verificar primera parte
+        run: test "$(wc -c < /tmp/radar-payload.b64)" -eq 30000
+
       - name: Añadir fragmentos hexadecimales
         shell: bash
         run: |
@@ -36,10 +39,13 @@ jobs:
                   output.write(bytes.fromhex(path.read_text().strip()))
           PY
 
+      - name: Verificar parte hexadecimal
+        run: test "$(wc -c < /tmp/radar-payload.b64)" -eq 36000
+
       - name: Añadir segunda parte base64
         run: cat .github/project-payload/b-*.b64 >> /tmp/radar-payload.b64
 
-      - name: Verificar tamaño base64
+      - name: Verificar tamaño total
         run: test "$(wc -c < /tmp/radar-payload.b64)" -eq 56084
 
       - name: Verificar firma base64
