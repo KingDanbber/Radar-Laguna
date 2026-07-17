@@ -2,6 +2,11 @@
 name: Publicar aplicación completa
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/project-payload/**'
+      - '.github/workflows/publicar-aplicacion.yml'
   push:
     branches: [main]
     paths:
@@ -76,4 +81,4 @@ jobs:
             exit 0
           fi
           git commit -m 'Publicar Radar Laguna V11 conectada a Supabase'
-          git push origin main
+          git push origin HEAD:main
