@@ -22,14 +22,22 @@ jobs:
           show-progress: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Reconstruir paquete
+      - name: Verificar fragmentos finales
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf /tmp/radar-extract /tmp/radar-preserve
-          mkdir -p /tmp/radar-extract /tmp/radar-preserve/assets
+          test "$(wc -c < .github/project-payload/b-tail-000.hex)" -eq 2084
+          test "$(wc -c < .github/project-payload/b-tail-001.hex)" -eq 2084
 
+      - name: Unir primera sección
+        shell: bash
+        run: |
           cat .github/project-payload/a-*.b64 > /tmp/radar-payload.b64
+          test "$(wc -c < /tmp/radar-payload.b64)" -eq 30000
+
+      - name: Añadir cola hexadecimal A
+        shell: bash
+        run: |
           python - <<'PY'
           from pathlib import Path
           target = Path('/tmp/radar-payload.b64')
@@ -37,8 +45,17 @@ jobs:
               for path in sorted(Path('.github/project-payload').glob('a-tail-*.hex')):
                   output.write(bytes.fromhex(path.read_text().strip()))
           PY
+          test "$(wc -c < /tmp/radar-payload.b64)" -eq 36000
 
+      - name: Añadir segunda sección
+        shell: bash
+        run: |
           cat .github/project-payload/b-*.b64 >> /tmp/radar-payload.b64
+          test "$(wc -c < /tmp/radar-payload.b64)" -eq 54000
+
+      - name: Añadir cola hexadecimal B
+        shell: bash
+        run: |
           python - <<'PY'
           from pathlib import Path
           target = Path('/tmp/radar-payload.b64')
@@ -46,22 +63,31 @@ jobs:
               for path in sorted(Path('.github/project-payload').glob('b-tail-*.hex')):
                   output.write(bytes.fromhex(path.read_text().strip()))
           PY
-
           test "$(wc -c < /tmp/radar-payload.b64)" -eq 56084
-          test "$(sha256sum /tmp/radar-payload.b64 | cut -d' ' -f1)" = "4e46aab7f6702b17bc1711defa0e29f7d0c4e61958bf2a953abb76a06415e041"
 
+      - name: Verificar firma base64
+        run: test "$(sha256sum /tmp/radar-payload.b64 | cut -d' ' -f1)" = "4e46aab7f6702b17bc1711defa0e29f7d0c4e61958bf2a953abb76a06415e041"
+
+      - name: Decodificar paquete
+        shell: bash
+        run: |
           python - <<'PY'
           from pathlib import Path
           import base64
           source = Path('/tmp/radar-payload.b64').read_bytes()
           Path('/tmp/radar-payload.gz').write_bytes(base64.b64decode(source, validate=True))
           PY
-
           test "$(sha256sum /tmp/radar-payload.gz | cut -d' ' -f1)" = "476172ce3c5856cfe481721657c9f6d1f8a676c4af02140226f5dc13944cdecb"
+
+      - name: Extraer paquete
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/radar-extract /tmp/radar-preserve
+          mkdir -p /tmp/radar-extract /tmp/radar-preserve/assets
           gzip -dc /tmp/radar-payload.gz > /tmp/radar-payload.tar
           tar -tf /tmp/radar-payload.tar >/dev/null
           tar -xf /tmp/radar-payload.tar -C /tmp/radar-extract
-
           if [ -f assets/logo-radar-laguna.png ]; then
             cp assets/logo-radar-laguna.png /tmp/radar-preserve/assets/
           fi
