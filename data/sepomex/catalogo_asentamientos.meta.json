@@ -1,0 +1,78 @@
+{
+  "project": "Radar Laguna V7",
+  "generatedFrom": [
+    "Coahuila de Zaragoza.txt",
+    "Durango.txt",
+    "CP_Coah.zip",
+    "CP_Dgo.zip"
+  ],
+  "joinKey": "d_codigo (TXT) = d_cp (SHP)",
+  "municipalities": [
+    "Torreón",
+    "Gómez Palacio",
+    "Lerdo"
+  ],
+  "totalSettlementRecords": 1128,
+  "uniquePostalCodes": 252,
+  "stats": {
+    "Torreón": {
+      "catalogRecords": 566,
+      "recordsMatchedToShp": 559,
+      "recordsExcludedNoShpPostalCode": 7,
+      "postalCodesInCatalog": 137,
+      "postalCodesMatchedToShp": 131,
+      "excludedPostalCodes": [
+        "27070",
+        "27295",
+        "27368",
+        "27403",
+        "27412",
+        "27436"
+      ]
+    },
+    "Gómez Palacio": {
+      "catalogRecords": 371,
+      "recordsMatchedToShp": 360,
+      "recordsExcludedNoShpPostalCode": 11,
+      "postalCodesInCatalog": 91,
+      "postalCodesMatchedToShp": 84,
+      "excludedPostalCodes": [
+        "35067",
+        "35099",
+        "35129",
+        "35143",
+        "35144",
+        "35146",
+        "35147"
+      ]
+    },
+    "Lerdo": {
+      "catalogRecords": 210,
+      "recordsMatchedToShp": 209,
+      "recordsExcludedNoShpPostalCode": 1,
+      "postalCodesInCatalog": 38,
+      "postalCodesMatchedToShp": 37,
+      "excludedPostalCodes": [
+        "35177"
+      ]
+    }
+  },
+  "excludedRecords": 19,
+  "excludedPostalCodes": [
+    "27070",
+    "27295",
+    "27368",
+    "27403",
+    "27412",
+    "27436",
+    "35067",
+    "35099",
+    "35129",
+    "35143",
+    "35144",
+    "35146",
+    "35147",
+    "35177"
+  ],
+  "sourceNotice": "El catálogo TXT suministrado indica uso particular gratuito y restricciones de comercialización y distribución a terceros. Revisar permisos antes de publicar este catálogo dentro de una app pública."
+}

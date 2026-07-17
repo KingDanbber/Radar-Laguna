@@ -1,0 +1,22 @@
+{
+  "CP_Coah.zip": {
+    "size_bytes": 3968194,
+    "shape_type": "POLYGON",
+    "records": 1289,
+    "dbf_fields": [
+      "d_cp"
+    ],
+    "projection": "Lambert Conformal Conic / WGS84",
+    "native_path": "./data/sepomex/CP_Coah.zip"
+  },
+  "CP_Dgo.zip": {
+    "size_bytes": 3942312,
+    "shape_type": "POLYGON",
+    "records": 1061,
+    "dbf_fields": [
+      "d_cp"
+    ],
+    "projection": "Lambert Conformal Conic / WGS84",
+    "native_path": "./data/sepomex/CP_Dgo.zip"
+  }
+}

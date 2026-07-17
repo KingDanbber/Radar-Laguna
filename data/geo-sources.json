@@ -1,0 +1,23 @@
+{
+  "project": "Radar Laguna V7",
+  "loading_strategy": "native-first with official remote fallback",
+  "geographic_layer": "SEPOMEX postal-code boundaries 2025",
+  "note": "Postal-code boundaries are not colony boundaries.",
+  "native_sources": [
+    {
+      "state": "Coahuila",
+      "path": "./data/sepomex/CP_Coah.zip",
+      "expected_filename": "CP_Coah.zip"
+    },
+    {
+      "state": "Durango",
+      "path": "./data/sepomex/CP_Dgo.zip",
+      "expected_filename": "CP_Dgo.zip"
+    }
+  ],
+  "optional_catalog": "./data/sepomex/catalogo_asentamientos.json",
+  "parser": {
+    "name": "shpjs",
+    "version": "6.2.0"
+  }
+}
