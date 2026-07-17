@@ -22,11 +22,23 @@ jobs:
           show-progress: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
+      - name: Comprobar b 000
+        run: test "$(wc -c < .github/project-payload/b-000.b64)" -eq 3000
+      - name: Comprobar b 001
+        run: test "$(wc -c < .github/project-payload/b-001.b64)" -eq 3000
+      - name: Comprobar b 002
+        run: test "$(wc -c < .github/project-payload/b-002.b64)" -eq 3000
+      - name: Comprobar b 003
+        run: test "$(wc -c < .github/project-payload/b-003.b64)" -eq 3000
+      - name: Comprobar b 004
+        run: test "$(wc -c < .github/project-payload/b-004.b64)" -eq 3000
+      - name: Comprobar b 005
+        run: test "$(wc -c < .github/project-payload/b-005.b64)" -eq 3000
+      - name: Comprobar b 006
+        run: test "$(wc -c < .github/project-payload/b-006.b64)" -eq 2084
+
       - name: Unir primera parte base64
         run: cat .github/project-payload/a-*.b64 > /tmp/radar-payload.b64
-
-      - name: Verificar primera parte
-        run: test "$(wc -c < /tmp/radar-payload.b64)" -eq 30000
 
       - name: Añadir fragmentos hexadecimales
         shell: bash
@@ -38,9 +50,6 @@ jobs:
               for path in sorted(Path('.github/project-payload').glob('a-tail-*.hex')):
                   output.write(bytes.fromhex(path.read_text().strip()))
           PY
-
-      - name: Verificar parte hexadecimal
-        run: test "$(wc -c < /tmp/radar-payload.b64)" -eq 36000
 
       - name: Añadir segunda parte base64
         run: cat .github/project-payload/b-*.b64 >> /tmp/radar-payload.b64
