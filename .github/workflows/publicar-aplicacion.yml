@@ -111,10 +111,9 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main:refs/remotes/origin/main
           git add -A
-          if git diff --cached --quiet; then
-            echo 'No hay cambios pendientes.'
-            exit 0
-          fi
-          git commit -m 'Publicar Radar Laguna V11 conectada a Supabase'
-          git push origin HEAD:main
+          TREE_SHA=$(git write-tree)
+          PARENT_SHA=$(git rev-parse origin/main)
+          COMMIT_SHA=$(printf '%s\n' 'Publicar Radar Laguna V11 conectada a Supabase' | git commit-tree "$TREE_SHA" -p "$PARENT_SHA")
+          git push origin "$COMMIT_SHA":main
