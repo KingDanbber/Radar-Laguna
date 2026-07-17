@@ -43,19 +43,13 @@ jobs:
       - name: Añadir segunda sección
         shell: bash
         run: |
-          cat .github/project-payload/b-*.b64 >> /tmp/radar-payload.b64
+          cat .github/project-payload/b-[0-9][0-9][0-9].b64 >> /tmp/radar-payload.b64
           test "$(wc -c < /tmp/radar-payload.b64)" -eq 54000
 
-      - name: Añadir cola hexadecimal B
+      - name: Añadir cola Base64 B
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          target = Path('/tmp/radar-payload.b64')
-          with target.open('ab') as output:
-              for path in sorted(Path('.github/project-payload').glob('b-tail-*.hex')):
-                  output.write(bytes.fromhex(path.read_text()))
-          PY
+          cat .github/project-payload/b-tail-*.b64 >> /tmp/radar-payload.b64
           test "$(wc -c < /tmp/radar-payload.b64)" -eq 56084
 
       - name: Verificar firma base64
