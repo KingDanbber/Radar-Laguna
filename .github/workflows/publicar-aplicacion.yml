@@ -22,34 +22,22 @@ jobs:
           show-progress: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Comprobar core 000
-        run: test "$(wc -c < .github/project-payload/core-000.b64)" -eq 18000
-      - name: Comprobar core 001
-        run: test "$(wc -c < .github/project-payload/core-001.b64)" -eq 18000
-      - name: Comprobar core 002
-        run: test "$(wc -c < .github/project-payload/core-002.b64)" -eq 3000
-      - name: Comprobar core 003
-        run: test "$(wc -c < .github/project-payload/core-003.b64)" -eq 3000
-      - name: Comprobar core 004
-        run: test "$(wc -c < .github/project-payload/core-004.b64)" -eq 3000
-      - name: Comprobar core 005
-        run: test "$(wc -c < .github/project-payload/core-005.b64)" -eq 3000
-      - name: Comprobar core 006
-        run: test "$(wc -c < .github/project-payload/core-006.b64)" -eq 3000
-      - name: Comprobar core 007
-        run: test "$(wc -c < .github/project-payload/core-007.b64)" -eq 3000
-      - name: Comprobar core 008
-        run: test "$(wc -c < .github/project-payload/core-008.b64)" -eq 2084
-
-      - name: Concatenar paquete
-        run: cat .github/project-payload/core-*.b64 > /tmp/radar-payload.b64
-
-      - name: Verificar base64
-        run: test "$(sha256sum /tmp/radar-payload.b64 | cut -d' ' -f1)" = "4e46aab7f6702b17bc1711defa0e29f7d0c4e61958bf2a953abb76a06415e041"
-
-      - name: Decodificar paquete
+      - name: Reconstruir paquete
         shell: bash
         run: |
+          set -euo pipefail
+          rm -rf /tmp/radar-extract /tmp/radar-preserve
+          mkdir -p /tmp/radar-extract /tmp/radar-preserve/assets
+
+          cat .github/project-payload/a-*.b64 > /tmp/radar-payload.b64
+          for file in .github/project-payload/a-tail-*.hex; do
+            xxd -r -p "$file" >> /tmp/radar-payload.b64
+          done
+          cat .github/project-payload/b-*.b64 >> /tmp/radar-payload.b64
+
+          test "$(wc -c < /tmp/radar-payload.b64)" -eq 56084
+          test "$(sha256sum /tmp/radar-payload.b64 | cut -d' ' -f1)" = "4e46aab7f6702b17bc1711defa0e29f7d0c4e61958bf2a953abb76a06415e041"
+
           python - <<'PY'
           from pathlib import Path
           import base64
@@ -57,18 +45,11 @@ jobs:
           Path('/tmp/radar-payload.gz').write_bytes(base64.b64decode(source, validate=True))
           PY
 
-      - name: Verificar gzip
-        run: test "$(sha256sum /tmp/radar-payload.gz | cut -d' ' -f1)" = "476172ce3c5856cfe481721657c9f6d1f8a676c4af02140226f5dc13944cdecb"
-
-      - name: Extraer paquete
-        shell: bash
-        run: |
-          set -euo pipefail
-          rm -rf /tmp/radar-extract /tmp/radar-preserve
-          mkdir -p /tmp/radar-extract /tmp/radar-preserve/assets
+          test "$(sha256sum /tmp/radar-payload.gz | cut -d' ' -f1)" = "476172ce3c5856cfe481721657c9f6d1f8a676c4af02140226f5dc13944cdecb"
           gzip -dc /tmp/radar-payload.gz > /tmp/radar-payload.tar
           tar -tf /tmp/radar-payload.tar >/dev/null
           tar -xf /tmp/radar-payload.tar -C /tmp/radar-extract
+
           if [ -f assets/logo-radar-laguna.png ]; then
             cp assets/logo-radar-laguna.png /tmp/radar-preserve/assets/
           fi
