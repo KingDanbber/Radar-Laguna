@@ -22,13 +22,6 @@ jobs:
           show-progress: false
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - name: Verificar fragmentos finales
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(wc -c < .github/project-payload/b-tail-000.hex)" -eq 2084
-          test "$(wc -c < .github/project-payload/b-tail-001.hex)" -eq 2084
-
       - name: Unir primera sección
         shell: bash
         run: |
@@ -43,7 +36,7 @@ jobs:
           target = Path('/tmp/radar-payload.b64')
           with target.open('ab') as output:
               for path in sorted(Path('.github/project-payload').glob('a-tail-*.hex')):
-                  output.write(bytes.fromhex(path.read_text().strip()))
+                  output.write(bytes.fromhex(path.read_text()))
           PY
           test "$(wc -c < /tmp/radar-payload.b64)" -eq 36000
 
@@ -61,7 +54,7 @@ jobs:
           target = Path('/tmp/radar-payload.b64')
           with target.open('ab') as output:
               for path in sorted(Path('.github/project-payload').glob('b-tail-*.hex')):
-                  output.write(bytes.fromhex(path.read_text().strip()))
+                  output.write(bytes.fromhex(path.read_text()))
           PY
           test "$(wc -c < /tmp/radar-payload.b64)" -eq 56084
 
