@@ -16,5 +16,9 @@ window.RADAR_SUPABASE_CONFIG = Object.freeze({
   publishableKey: "sb_publishable_EOuFeFMDB5rM2Kjq2JgS9g_t1eT-iHy",
 });
 
-// El catálogo optimizado debe cargarse antes de app.js.
+// V12 debe ejecutarse antes de app.js para interceptar la geografía postal.
+document.write('<script src="./v12.js"><\/script>');
+document.write('<script src="./v12-geo-compact.js"><\/script>');
+
+// Catálogo optimizado de colonias y asentamientos.
 document.write('<script src="./catalog-loader.js"><\/script>');
