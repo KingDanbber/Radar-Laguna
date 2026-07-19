@@ -1,4 +1,4 @@
-# Radar Laguna · pipeline nativo SEPOMEX V1
+# Radar Laguna · pipeline nativo SEPOMEX V1.1
 name: Construir datos SEPOMEX
 
 on:
@@ -9,6 +9,16 @@ on:
     paths:
       - data/sepomex/CP_Coah.zip
       - data/sepomex/CP_Dgo.zip
+      - data/sepomex/.rebuild-trigger
+      - scripts/build-sepomex.py
+      - .github/workflows/build-sepomex.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - data/sepomex/CP_Coah.zip
+      - data/sepomex/CP_Dgo.zip
+      - data/sepomex/.rebuild-trigger
       - scripts/build-sepomex.py
       - .github/workflows/build-sepomex.yml
 
@@ -16,7 +26,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: build-sepomex-main
+  group: build-sepomex-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -52,7 +62,19 @@ jobs:
           python -m json.tool data/sepomex/sepomex-build-report.json > /dev/null
           git diff --check
 
+      - name: Guardar resultado para auditoría
+        uses: actions/upload-artifact@v4
+        with:
+          name: sepomex-generated
+          if-no-files-found: error
+          retention-days: 7
+          path: |
+            data/geo/laguna-postal.compact.txt
+            data/sepomex/catalogo_asentamientos.json
+            data/sepomex/sepomex-build-report.json
+
       - name: Publicar resultados en main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
