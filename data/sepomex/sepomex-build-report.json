@@ -1,0 +1,75 @@
+{
+  "generatedAt": "2026-07-19T22:04:36+00:00",
+  "generator": "scripts/build-sepomex.py",
+  "sources": {
+    "coahuila": {
+      "zip": "data/sepomex/CP_Coah.zip",
+      "sha256": "7a4d5f70d1f95685e05212be763b4025755826ac10ed2ea62b40bca8c4ae91b3",
+      "sizeBytes": 3968194,
+      "members": [
+        "CP_Coah.dbf",
+        "CP_Coah.prj",
+        "CP_Coah.shp",
+        "CP_Coah.shx"
+      ],
+      "shapefiles": [
+        {
+          "file": "CP_Coah.shp",
+          "records": 1289,
+          "fields": [
+            "d_cp"
+          ],
+          "keptPolygonRecords": 142,
+          "skippedWithoutPostalCode": 0,
+          "skippedOutsideLaguna": 1147
+        }
+      ],
+      "keptPolygonRecords": 142,
+      "catalogRowsDetected": 0
+    },
+    "durango": {
+      "zip": "data/sepomex/CP_Dgo.zip",
+      "sha256": "b02070954d6918253e2923f6434363a95a839c8c4e6af2770cf1fa23766ae694",
+      "sizeBytes": 3942312,
+      "members": [
+        "CP_Dgo.dbf",
+        "CP_Dgo.prj",
+        "CP_Dgo.shp",
+        "CP_Dgo.shx"
+      ],
+      "shapefiles": [
+        {
+          "file": "CP_Dgo.shp",
+          "records": 1061,
+          "fields": [
+            "d_cp"
+          ],
+          "keptPolygonRecords": 94,
+          "skippedWithoutPostalCode": 0,
+          "skippedOutsideLaguna": 967
+        }
+      ],
+      "keptPolygonRecords": 94,
+      "catalogRowsDetected": 0
+    }
+  },
+  "outputs": {
+    "zoneCount": 236,
+    "zonesByState": {
+      "coahuila": 142,
+      "durango": 94
+    },
+    "zonesByCity": {
+      "gomez_palacio": 57,
+      "lerdo": 37,
+      "torreon": 142
+    },
+    "catalogRows": 1122,
+    "catalogRowsDetectedDirectly": 0,
+    "catalogRowsRecoveredFromEmbeddedFallback": 1122,
+    "geoJsonBytesBeforeCompression": 255731,
+    "compactBase64Bytes": 68448,
+    "catalogBytes": 176950
+  },
+  "warnings": []
+}
