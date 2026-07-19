@@ -11,18 +11,23 @@ window.RADAR_SUPABASE_CONFIG = Object.freeze({
   publishableKey: "sb_publishable_EOuFeFMDB5rM2Kjq2JgS9g_t1eT-iHy",
 });
 
-// V12 debe ejecutarse antes de app.js para interceptar la geografía postal.
-document.write('<script src="./v12.js"><\/script>');
-document.write('<script src="./v12-geo-compact.js"><\/script>');
-
-// Catálogo optimizado de colonias y asentamientos.
-document.write('<script src="./catalog-loader.js"><\/script>');
-
-// V13.1 se carga después de que la interfaz base y V13 estén listas.
 window.addEventListener("load", () => {
-  if (document.querySelector('script[data-radar-v13-1]')) return;
+  const loadV132 = () => {
+    if (document.querySelector('script[data-radar-v13-2]')) return;
+    const script = document.createElement("script");
+    script.src = "./v13-2.js";
+    script.setAttribute("data-radar-v13-2", "true");
+    document.body.appendChild(script);
+  };
+
+  if (document.querySelector('script[data-radar-v13-1]')) {
+    loadV132();
+    return;
+  }
+
   const script = document.createElement("script");
   script.src = "./v13-1.js";
   script.setAttribute("data-radar-v13-1", "true");
+  script.addEventListener("load", loadV132, { once: true });
   document.body.appendChild(script);
 }, { once: true });
