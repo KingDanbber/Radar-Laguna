@@ -23,6 +23,6 @@ window.addEventListener("load", () => {
   if (document.querySelector('script[data-radar-v13-1]')) return;
   const script = document.createElement("script");
   script.src = "./v13-1.js";
-  script.dataset.radarV13_1 = "true";
+  script.setAttribute("data-radar-v13-1", "true");
   document.body.appendChild(script);
 }, { once: true });
