@@ -1,32 +1,31 @@
-# Radar Laguna V13
+# Radar Laguna V13.1
 
-V13 incorpora una PWA instalable y alertas comunitarias por colonia o código postal.
+V13.1 reorganiza la experiencia móvil sin cambiar la ventana activa del radar.
 
-## PWA
+## Centro de control en el header
 
-- `manifest.webmanifest`
-- `service-worker.js`
-- iconos 192, 512 y maskable
-- pantalla sin conexión
-- caché del shell, GeoJSON postal y catálogo de asentamientos
-- botón de instalación cuando el navegador emite `beforeinstallprompt`
+El icono de campana reúne:
 
-## Alertas de restablecimiento
+- Instalación PWA.
+- Permiso opcional de notificaciones.
+- Creación y administración de alertas por colonia o CP.
+- Historial comunitario de reportes.
 
-El usuario puede seleccionar una colonia o todo un código postal y activar una alerta. La suscripción se guarda en Supabase mediante la tabla `alert_subscriptions`.
+Las tarjetas grandes de instalación y alertas fueron retiradas del flujo principal.
 
-La app analiza reportes recientes con la misma lógica prudente de V5:
+## Historial y caducidad
 
-- reportes previos problemáticos
-- nuevas señales de buena presión
-- etiquetas `Regresó el agua`, `Llenando tinaco` o `Presión estable`
-- votos `Ya cambió`
-- confirmaciones y recencia
+Los reportes siguen almacenados en Supabase. La señal activa conserva una ventana de seis horas para evitar que información antigua coloree el mapa actual.
 
-## Limitación honesta
+El historial muestra:
 
-V13 muestra notificaciones cuando la aplicación está abierta, instalada o conservada en segundo plano. Una recepción garantizada con la aplicación completamente cerrada requiere Web Push de servidor, claves VAPID y una función programada, que no se presenta como implementada en esta versión.
+- Estado y colonia.
+- Etiquetas originales.
+- Confirmaciones y cambios.
+- `Señal caducada` cuando supera seis horas.
+- Indicador `Tu reporte` cuando pertenece a la sesión anónima actual.
+- Botón `Actualizar estado` para reutilizar ubicación, colonia, estado y etiquetas.
 
-## Migración
+## Privacidad
 
-Ejecutar `supabase/migrations/003_alert_subscriptions.sql`.
+Instalación, ubicación y notificaciones continúan siendo opcionales. Las alertas solamente guardan la zona elegida y el identificador técnico anónimo necesario para administrarlas.
