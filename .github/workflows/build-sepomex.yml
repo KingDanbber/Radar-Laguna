@@ -1,4 +1,4 @@
-# Radar Laguna · pipeline nativo SEPOMEX V1.1
+# Radar Laguna · pipeline nativo SEPOMEX V1.2
 name: Construir datos SEPOMEX
 
 on:
@@ -45,7 +45,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: pip
 
       - name: Instalar conversores geográficos
         run: python -m pip install --disable-pip-version-check pyshp==2.3.1 shapely==2.1.1 pyproj==3.7.1
