@@ -1,0 +1,23 @@
+{
+  "name": "Radar Laguna · Radar de Agua",
+  "short_name": "Radar Laguna",
+  "description": "Radar comunitario de agua, presión y tandeo para Torreón, Gómez Palacio y Lerdo.",
+  "id": "./",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#eef7fb",
+  "theme_color": "#087fa5",
+  "lang": "es-MX",
+  "categories": ["utilities", "social"],
+  "icons": [
+    {"src": "./assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "./assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "./assets/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Reportar agua", "short_name": "Reportar", "url": "./?action=report", "icons": [{"src": "./assets/icons/icon-192.png", "sizes": "192x192"}]},
+    {"name": "Mis alertas", "short_name": "Alertas", "url": "./?action=alerts", "icons": [{"src": "./assets/icons/icon-192.png", "sizes": "192x192"}]}
+  ]
+}

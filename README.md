@@ -1,61 +1,32 @@
-# Radar Laguna V12
+# Radar Laguna V13
 
-Radar de Agua comunitario para Torreón, Gómez Palacio y Lerdo, conectado a Supabase y desplegado en Vercel.
+V13 incorpora una PWA instalable y alertas comunitarias por colonia o código postal.
 
-## Novedades V12
+## PWA
 
-### Geografía postal optimizada
+- `manifest.webmanifest`
+- `service-worker.js`
+- iconos 192, 512 y maskable
+- pantalla sin conexión
+- caché del shell, GeoJSON postal y catálogo de asentamientos
+- botón de instalación cuando el navegador emite `beforeinstallprompt`
 
-- 236 zonas postales reales de la Región Lagunera.
-- Torreón: 142 zonas.
-- Gómez Palacio: 56 zonas.
-- Lerdo: 38 zonas.
-- La capa se distribuye como un recurso local comprimido de aproximadamente 15 KB.
-- Ya no depende de descargar los SHP estatales completos durante cada visita.
-- Si la capa optimizada falla, la aplicación conserva el respaldo oficial remoto.
+## Alertas de restablecimiento
 
-### Comunidad activa
+El usuario puede seleccionar una colonia o todo un código postal y activar una alerta. La suscripción se guarda en Supabase mediante la tabla `alert_subscriptions`.
 
-V12 muestra métricas agregadas de Supabase:
+La app analiza reportes recientes con la misma lógica prudente de V5:
 
-- Participaciones únicas estimadas durante las últimas 24 horas.
-- Reportes publicados hoy.
-- Confirmaciones comunitarias.
-- Reportes históricos.
-- Actividad diaria por ciudad.
+- reportes previos problemáticos
+- nuevas señales de buena presión
+- etiquetas `Regresó el agua`, `Llenando tinaco` o `Presión estable`
+- votos `Ya cambió`
+- confirmaciones y recencia
 
-El número de “laguneros” se calcula mediante sesiones anónimas distintas. Es una estimación: una misma persona puede contar nuevamente si cambia de dispositivo o elimina su sesión.
+## Limitación honesta
 
-### Resumen por colonia
+V13 muestra notificaciones cuando la aplicación está abierta, instalada o conservada en segundo plano. Una recepción garantizada con la aplicación completamente cerrada requiere Web Push de servidor, claves VAPID y una función programada, que no se presenta como implementada en esta versión.
 
-La aplicación agrupa los reportes recientes por colonia o zona postal y muestra:
+## Migración
 
-- Estado predominante.
-- Código postal.
-- Número de reportes.
-- Confirmaciones.
-- Momento de la última señal.
-
-## Archivos V12
-
-```text
-v12.js
-v12-geo-compact.js
-data/geo/laguna-postal.compact.txt
-supabase/migrations/002_community_stats.sql
-```
-
-## Supabase
-
-- Sesiones anónimas.
-- RLS.
-- Reportes y votos en tiempo real.
-- Un voto por sesión y reporte.
-- Límite de reportes para reducir abuso.
-- Función agregada `get_community_stats()` accesible únicamente para sesiones autenticadas.
-
-## Privacidad
-
-Radar Laguna no muestra identificadores anónimos individuales. El contador únicamente presenta cifras agregadas. La ubicación continúa siendo opcional y se usa con fines informativos para localizar el reporte dentro de una zona postal.
-
-Proyecto comunitario independiente: **De un Lagunero para Laguneros ❤️**
+Ejecutar `supabase/migrations/003_alert_subscriptions.sql`.
