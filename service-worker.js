@@ -1,8 +1,8 @@
 "use strict";
-const CACHE_NAME = "radar-laguna-v13-2-2-shell-1";
+const CACHE_NAME = "radar-laguna-v13-3-shell-1";
 const OFFLINE_URL = "./offline.html";
 const SHELL = [
-  "./", "./index.html", "./styles.css", "./app.js", "./v12.js", "./v12-geo-compact.js", "./catalog-loader.js", "./v13.js", "./v13-1.js", "./v13-2.js",
+  "./", "./index.html", "./styles.css", "./app.js", "./v12.js", "./v12-geo-compact.js", "./catalog-loader.js", "./v13.js", "./v13-1.js", "./v13-2.js", "./v13-3.js",
   "./supabase-config.js", "./supabase-service.js", "./manifest.webmanifest",
   "./offline.html", "./aviso-privacidad.html", "./terminos.html", "./fuentes-metodologia.html",
   "./assets/logo-radar-laguna.png", "./assets/icons/icon-192.png", "./assets/icons/icon-512.png",
@@ -56,6 +56,7 @@ self.addEventListener("fetch", (event) => {
       "/catalog-loader.js",
       "/v13-1.js",
       "/v13-2.js",
+      "/v13-3.js",
       "/data/geo/laguna-postal.compact.txt",
     ].some((path) => url.pathname.endsWith(path));
 
