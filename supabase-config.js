@@ -17,3 +17,12 @@ document.write('<script src="./v12-geo-compact.js"><\/script>');
 
 // Catálogo optimizado de colonias y asentamientos.
 document.write('<script src="./catalog-loader.js"><\/script>');
+
+// V13.1 se carga después de que la interfaz base y V13 estén listas.
+window.addEventListener("load", () => {
+  if (document.querySelector('script[data-radar-v13-1]')) return;
+  const script = document.createElement("script");
+  script.src = "./v13-1.js";
+  script.dataset.radarV13_1 = "true";
+  document.body.appendChild(script);
+}, { once: true });
