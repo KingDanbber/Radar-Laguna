@@ -1,0 +1,56 @@
+name: Instalar Radar Laguna V13.3
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - v13-3.js
+      - scripts/install-v13-3.py
+      - .github/workflows/install-v13-3.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: install-radar-v13-3-main
+  cancel-in-progress: true
+
+jobs:
+  install:
+    name: Activar widget de clima
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validar JavaScript
+        run: node --check v13-3.js
+
+      - name: Instalar V13.3
+        run: python scripts/install-v13-3.py
+
+      - name: Validar integración
+        run: |
+          grep -F '<script src="./v13-3.js?v=13.3.0"></script>' index.html
+          grep -F '"./v13-3.js"' service-worker.js
+          grep -F '"/v13-3.js",' service-worker.js
+          grep -F 'radar-laguna-v13-3-shell-1' service-worker.js
+          git diff --check
+
+      - name: Publicar V13.3 en main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html service-worker.js
+          if git diff --cached --quiet; then
+            echo "Radar Laguna V13.3 ya estaba activa."
+            exit 0
+          fi
+          git commit -m "Activar widget de clima Radar Laguna V13.3 [skip ci]"
+          git push origin HEAD:main
